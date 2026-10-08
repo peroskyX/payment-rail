@@ -1,0 +1,23 @@
+import { Module } from '@nestjs/common';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+
+import { ConfigurationModule } from './config/configuration.module.js';
+import { HealthModule } from './health/health.module.js';
+import { CanonicalExceptionFilter } from './http/canonical-exception.filter.js';
+import { createRequestValidationPipe } from './http/request-validation.pipe.js';
+import { ObservabilityModule } from './observability/observability.module.js';
+
+@Module({
+  imports: [ConfigurationModule, ObservabilityModule, HealthModule],
+  providers: [
+    {
+      provide: APP_PIPE,
+      useFactory: createRequestValidationPipe,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: CanonicalExceptionFilter,
+    },
+  ],
+})
+export class AppModule {}
