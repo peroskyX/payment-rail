@@ -12,8 +12,7 @@ export class HealthController {
 
   @Get('live')
   liveness(): { status: 'ok' } {
-    throw new Error('Stage 1 deliberate failure');
-
+    return { status: 'ok' };
   }
 
   @Get('ready')
