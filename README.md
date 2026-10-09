@@ -6,7 +6,7 @@ This project uses test/simulated money only. It is not a production payment syst
 
 ## Current progress
 
-Stage 1 establishes the NestJS application foundation. No payment endpoints or provider integrations exist yet.
+Stage 2 establishes the framework-free canonical payment domain and state machines. No payment endpoints or provider integrations exist yet.
 
 Implemented:
 
@@ -19,6 +19,13 @@ Implemented:
 - PostgreSQL Docker Compose service;
 - unit and application-level tests;
 - CI quality pipeline and initial ADRs.
+- integer-minor-unit `Money` with reviewed currency metadata;
+- separate logical payment, provider-attempt, and fulfillment concepts;
+- explicit canonical payment and fulfillment transition tables;
+- evidence/source requirements and immutable transition descriptions;
+- narrow reconciliation-only late-success correction;
+- canonical provider error taxonomy separated from recovery action;
+- exhaustive domain tests that run without NestJS.
 
 ## Prerequisites
 
@@ -51,7 +58,7 @@ PostgreSQL 18 stores its version-specific data directory beneath `/var/lib/postg
 - `pnpm test:coverage`
 - `pnpm build`
 
-## Understanding Stage 1
+## Understanding Stages 1 and 2
 
 Read:
 
@@ -59,5 +66,8 @@ Read:
 - [Stage 1 architecture walkthrough](docs/architecture/stage-1-foundation.md)
 - [ADR 001: NestJS modular monolith](docs/adr/001-nestjs-modular-monolith.md)
 - [ADR 002: Configuration and secrets](docs/adr/002-configuration-and-secrets-boundary.md)
+- [Stage 2 guide](docs/implementation/02-domain-state-machines.md)
+- [Stage 2 architecture walkthrough](docs/architecture/stage-2-domain-model.md)
+- [ADR 003: Canonical payment domain](docs/adr/003-canonical-payment-domain.md)
 
-The next implementation stage is the framework-free [canonical domain model and state machines](docs/implementation/02-domain-state-machines.md).
+The next implementation stage is [PostgreSQL persistence and concurrency](docs/implementation/03-postgresql-persistence.md).
