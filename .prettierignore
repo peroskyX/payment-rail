@@ -1,6 +1,7 @@
 dist
 coverage
 node_modules
+drizzle/meta
 pnpm-lock.yaml
 .kilo
 RAILBRIDGE_IMPLEMENTATION_PLAN.md

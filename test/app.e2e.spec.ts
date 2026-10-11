@@ -6,7 +6,7 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { AppModule } from '../src/app.module.js';
-import { PostgresTcpHealthIndicator } from '../src/health/postgres-tcp.health-indicator.js';
+import { PostgresHealthIndicator } from '../src/health/postgres.health-indicator.js';
 import { CORRELATION_ID_HEADER } from '../src/observability/correlation-id.js';
 
 describe('application foundation', () => {
@@ -15,7 +15,7 @@ describe('application foundation', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(PostgresTcpHealthIndicator)
+      .overrideProvider(PostgresHealthIndicator)
       .useValue({ check: vi.fn().mockResolvedValue({ postgres: { status: 'up' } }) })
       .compile();
 

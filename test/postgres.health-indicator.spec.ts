@@ -3,16 +3,16 @@ import type { HealthIndicatorService } from '@nestjs/terminus';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { EnvironmentVariables } from '../src/config/environment.js';
-import { PostgresTcpHealthIndicator } from '../src/health/postgres-tcp.health-indicator.js';
+import type { DatabaseService } from '../src/database/database.service.js';
+import { PostgresHealthIndicator } from '../src/health/postgres.health-indicator.js';
 
-describe('PostgresTcpHealthIndicator', () => {
-  it('reports down when the configured endpoint cannot be reached', async () => {
-    const values: Partial<EnvironmentVariables> = {
-      DATABASE_URL: 'postgresql://railbridge:railbridge@127.0.0.1:1/unavailable',
-      POSTGRES_READINESS_TIMEOUT_MS: 50,
-    };
+describe('PostgresHealthIndicator', () => {
+  it('reports down when a query or schema readiness check fails', async () => {
+    const database = {
+      checkReadiness: vi.fn().mockRejectedValue(new Error('payments table missing')),
+    } as unknown as DatabaseService;
     const config = {
-      get: vi.fn((key: keyof EnvironmentVariables) => values[key]),
+      get: vi.fn(() => 50),
     } as unknown as ConfigService<EnvironmentVariables, true>;
     const health = {
       check: vi.fn(() => ({
@@ -20,12 +20,12 @@ describe('PostgresTcpHealthIndicator', () => {
         down: (details: object) => ({ postgres: { status: 'down', ...details } }),
       })),
     } as unknown as HealthIndicatorService;
-    const indicator = new PostgresTcpHealthIndicator(config, health);
+    const indicator = new PostgresHealthIndicator(database, config, health);
 
     await expect(indicator.check()).resolves.toMatchObject({
       postgres: {
         status: 'down',
-        message: 'Cannot reach PostgreSQL at 127.0.0.1:1',
+        message: 'PostgreSQL query or required schema check failed',
       },
     });
   });

@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791572906239,
+      "tag": "0000_stage_3_initial_persistence",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791572927840,
+      "tag": "0001_stage_3_constraints",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791572973141,
+      "tag": "0002_attempt_optimistic_version",
+      "breakpoints": true
+    }
+  ]
+}

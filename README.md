@@ -6,7 +6,7 @@ This project uses test/simulated money only. It is not a production payment syst
 
 ## Current progress
 
-Stage 2 establishes the framework-free canonical payment domain and state machines. No payment endpoints or provider integrations exist yet.
+Stage 3 persists the canonical payment domain in PostgreSQL with explicit concurrency and history guarantees. No payment endpoints or provider integrations exist yet.
 
 Implemented:
 
@@ -26,6 +26,14 @@ Implemented:
 - narrow reconciliation-only late-success correction;
 - canonical provider error taxonomy separated from recovery action;
 - exhaustive domain tests that run without NestJS.
+- reviewed Drizzle SQL migrations for the initial PostgreSQL model;
+- typed `pg`/Drizzle database module with graceful pool shutdown;
+- repository ports, explicit row/domain mapping, and a PostgreSQL adapter;
+- atomic current-state update plus immutable transition history;
+- optimistic versions for payment and attempt transition races;
+- database constraints and scoped uniqueness for financial references;
+- query-and-schema PostgreSQL readiness instead of a TCP-only probe;
+- real PostgreSQL integration tests through Testcontainers.
 
 ## Prerequisites
 
@@ -38,7 +46,8 @@ Implemented:
 1. Copy `.env.example` to `.env`.
 2. Start PostgreSQL with `docker compose up -d postgres`.
 3. Install dependencies with `pnpm install`.
-4. Start the application with `pnpm start:dev`.
+4. Apply migrations with `pnpm db:migrate`.
+5. Start the application with `pnpm start:dev`.
 
 Endpoints:
 
@@ -55,10 +64,17 @@ PostgreSQL 18 stores its version-specific data directory beneath `/var/lib/postg
 - `pnpm lint`
 - `pnpm typecheck`
 - `pnpm test`
+- `pnpm test:integration`
 - `pnpm test:coverage`
 - `pnpm build`
 
-## Understanding Stages 1 and 2
+Database commands:
+
+- `pnpm db:generate --name=describe_the_change`
+- `pnpm db:migrate`
+- `pnpm db:studio`
+
+## Understanding Stages 1–3
 
 Read:
 
@@ -69,5 +85,10 @@ Read:
 - [Stage 2 guide](docs/implementation/02-domain-state-machines.md)
 - [Stage 2 architecture walkthrough](docs/architecture/stage-2-domain-model.md)
 - [ADR 003: Canonical payment domain](docs/adr/003-canonical-payment-domain.md)
+- [Stage 3 guide](docs/implementation/03-postgresql-persistence.md)
+- [Stage 3 architecture walkthrough](docs/architecture/stage-3-persistence.md)
+- [ADR 004: PostgreSQL and migrations](docs/adr/004-postgresql-drizzle-migrations.md)
+- [ADR 005: Transition concurrency](docs/adr/005-optimistic-transition-concurrency.md)
+- [Provider evidence retention](docs/architecture/provider-evidence-retention.md)
 
-The next implementation stage is [PostgreSQL persistence and concurrency](docs/implementation/03-postgresql-persistence.md).
+The next implementation stage is [API idempotency](docs/implementation/04-api-idempotency.md).

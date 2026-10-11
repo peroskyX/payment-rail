@@ -1,0 +1,2 @@
+ALTER TABLE "payment_attempts" ADD COLUMN "version" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+ALTER TABLE "payment_attempts" ADD CONSTRAINT "payment_attempts_version_non_negative_ck" CHECK ("payment_attempts"."version" >= 0);

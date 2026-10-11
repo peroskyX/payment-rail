@@ -21,7 +21,7 @@ AppModule
 └── HealthModule
     ├── TerminusModule
     ├── HealthController
-    └── PostgresTcpHealthIndicator
+    └── PostgresHealthIndicator (upgraded in Stage 3)
 ```
 
 `AppModule` is the composition root. It decides which capabilities form this executable. It contains no workflow logic.
@@ -179,9 +179,7 @@ Future domain errors should be translated into application/HTTP errors deliberat
 - `/health/live` proves the process can answer. It must stay independent of PostgreSQL so an orchestrator does not repeatedly restart a healthy process during a database outage.
 - `/health/ready` proves mandatory dependencies are usable enough to accept traffic.
 
-The Stage 1 PostgreSQL indicator parses the validated URL and attempts a bounded TCP connection. It uses `HealthIndicatorService` to create the standard Terminus result.
-
-This check proves network reachability only. It does not prove credentials, database existence, migration state, or query success. Stage 3 introduces `pg`/Drizzle and replaces or strengthens it with an actual query/schema check. The current limited name and documentation are intentional: it is `PostgresTcpHealthIndicator`, not a claim of complete database health.
+The original Stage 1 indicator attempted a bounded TCP connection. Stage 3 replaced it with `PostgresHealthIndicator`, which runs a bounded PostgreSQL query and verifies the required migrated schema exists. Liveness remains independent of the database.
 
 ### Test structure
 
@@ -190,7 +188,7 @@ The five test files cover different boundaries:
 - `environment.spec.ts` tests startup input conversion and rejection without Nest bootstrap.
 - `correlation-id.spec.ts` tests valid preservation and unsafe-value replacement as a plain function.
 - `request-validation.pipe.spec.ts` tests the global transport policy directly.
-- `postgres-tcp.health-indicator.spec.ts` proves an unreachable endpoint reports down.
+- `postgres.health-indicator.spec.ts` proves a failed query/schema check reports down.
 - `app.e2e.spec.ts` compiles the real `AppModule`, overrides only the external dependency probe, starts a Nest application, and tests HTTP behavior.
 
 The readiness override demonstrates Nest testing modules: production wiring is retained while one external boundary is substituted. Unit tests should not compile a Nest module when a plain object/function can be tested more clearly.
